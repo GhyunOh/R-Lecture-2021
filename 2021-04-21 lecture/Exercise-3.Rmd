@@ -1,0 +1,44 @@
+---
+title: "Exercise-3"
+author: "JeehyunOh"
+date: '2021 4 21 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 연습문제 3-1
+x부터 1부터 100까지의 수 중 3의 배수만 포함하고 y는 1부터 100까지의 수 중 4의 배수만 포함하는 벡터로 만들어라.
+```{r}
+x <- c(1:100)
+y <- c(1:100)
+x <- x[x%%3 == 0]
+y <- y[y%%4 == 0]
+```
+```{r}
+x
+```
+```{r}
+y
+```
+
+
+# 연습문제 3-2
+01문제에서 x와y의 교집합을 구하고, 해당 교집합에 포함된 수를 모두 더한 값을 구하라.
+```{r}
+x <- c(1:100)
+y <- c(1:100)
+x <- x[x%%3 == 0]
+y <- y[y%%4 == 0]
+```
+
+```{r}
+intersect(x,y)
+```
+
+```{r}
+sum(intersect(x,y))
+```
+

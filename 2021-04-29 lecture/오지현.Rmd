@@ -1,0 +1,26 @@
+---
+title: "Exercise"
+author: "JeehyunOh"
+date: '2021 4 29 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+mydata <- read.csv('http://www.randomservices.org/random/data/Galton.txt', sep = '\t')
+# 단순선형회귀
+library(dplyr)
+FSData <- mydata %>% 
+    filter(Gender == 'M') %>%
+    summarise(Father = Father * 2.54,Height = Height * 2.54)
+m <- lm(Height~Father,data = FSData)
+plot(FSData) +
+abline(m, col='red')
+
+# Height= 0.4477 * Father +97.1776
+# 아빠의 키가 아들의 키에 유의미하다
+```
+

@@ -1,0 +1,46 @@
+---
+title: "Exercise"
+author: "JeehyunOh"
+date: '2021 4 30 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 01번 문제
+252쪽의 다중 선형 회귀에서 lm 함수의 식을 trees$Volume ~ poly(trees$Girth,2) + poly(trees$Height,2)로 설정하고 실행하라.
+실행 결과로 얻은 모델의 식을 쓰고 설명하라.
+
+```{r}
+m <- lm(trees$Volume ~ poly(trees$Girth,2) + poly(trees$Height,2))
+summary(m)
+```
+
+trees$Height의 2차식을 제외한 나머지 식들은 유의 수준인 0.05보다 낮으므로 유의미 하다고 볼 수 있다. Adjusted R-squared 값 또한 0.9735으로 설명력이 높습니다.
+
+# 02번 문제
+
+베이스 R이 제공하는 airquality 데이터에 다중 선형 회귀를 적용하라. 이 데이터는 변수 간의 인과관계가 불분명하니 설명 변수와 반응 변수를 여러 조합으로 시도해본다. 훈련 집합에 있는
+샘플 3개를 뽑아 약간의 잡음을 추가해서 만든 샘플을 사용하여 예측을 수행하라.
+
+```{r}
+air <- airquality
+o <- air$Ozone
+s <- air$Solar.R
+w <- air$Wind
+t <- air$Temp
+m <- air$Month
+d <- air$Day
+model1 <- lm(o ~ s + w + t + m + d)
+model1.1 <- lm(o ~ w + t + s + d + m)
+model2 <- lm(s ~ o + w + t + m + d)
+summary(model1)
+summary(model1.1)
+summary(model2)
+ndata <- data.frame(Solar.R = c(72,86,85.),Wind= c(51,80,65),
+                    Temp= c(80,100,40),Month = c(1,2,3),Day = c(22,21,30))
+predict(model1, ndata)
+```
+

@@ -1,0 +1,149 @@
+---
+title: "Exercise"
+author: "JeehyunOh"
+date: '2021 5 4 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 01번 문제
+colon 데이터에 랜덤 포리스트를 적용하는데 k-겹 교차 검증을
+k를 5, 10, 15, 20으로 바꾸면서 적용하라, 각각의 혼동 행렬과 정확률을 제시하라.
+
+```{r}
+library(caret)
+library(rpart)
+library(randomForest)
+library(e1071)
+library(class)
+library(survival)
+data <- na.omit(colon)
+data$status <- factor(data$status)
+k <- c(5,10,15,20)
+for(j in 1:length(k)){
+    control <- trainControl(method='cv', number=k[j])
+    new_rf <- train(status~.,data=data, method='rf',
+                    metric='Accuracy', trControl=control)
+    print(confusionMatrix(new_rf))
+}
+```
+
+# 02번 문제
+353~356쪽의 과정을 UCLA admission 데이터에 대해 수행하라.
+
+```{r}
+ucla <- read.csv('https://stats.idre.ucla.edu/stat/data/binary.csv')
+clean_ucla=na.omit(ucla)
+clean_ucla=clean_ucla[c(TRUE,FALSE), ]
+clean_ucla$admit <- factor(clean_ucla$admit)
+control=trainControl(method='cv',number=10)
+formular=admit~.
+L <- train(formular,data=clean_ucla,
+           method='svmLinear',metric='Accuracy',
+           trControl=control)
+LW <- train(formular,data=clean_ucla,
+            method='svmLinearWeights',metric='Accuracy',
+            trControl=control)
+P <- train(formular,data=clean_ucla,
+            method='svmPoly',metric='Accuracy',
+            trControl=control)
+R <- train(formular,data=clean_ucla,
+            method='svmRadial',metric='Accuracy',
+            trControl=control)
+RW <- train(formular,data=clean_ucla,
+            method='svmRadialWeights',metric='Accuracy',
+            trControl=control)
+f100 <- train(formular,data=clean_ucla,
+            method='rf',ntree=100,metric='Accuracy',
+            trControl=control)
+f300 <- train(formular,data=clean_ucla,
+            method='rf',ntree=300,metric='Accuracy',
+            trControl=control)
+f500 <- train(formular,data=clean_ucla,
+            method='rf',ntree=500,metric='Accuracy',
+            trControl=control)
+r <- train(formular,data=clean_ucla,
+            method='rpart',metric='Accuracy',
+            trControl=control)
+k <- train(formular,data=clean_ucla,
+            method='knn',metric='Accuracy',
+            trControl=control)
+g <- train(formular,data=clean_ucla,
+            method='glm',metric='Accuracy',
+            trControl=control)
+resamp = resamples(list(선형=L, 선형가중치=LW, 다항식=P,
+                        RBF= R, 가중치=RW, rf100=f100,
+                        rf300=f300, rf500=f500,tree=r,
+                        knn=k,glm=g))
+summary(resamp)
+```
+
+```{r}
+sort(resamp,decreasing=TRUE)
+```
+
+```{r}
+dotplot(resamp)
+```
+
+# 03번 문제
+353~356쪽의 과정을 voice 데이터에 대해 수행하라
+
+```{r}
+voice = read.csv('C:/Workspace/R/2021-05-04 lecture/voice.csv')
+clean_voice=na.omit(voice)
+clean_voice=clean_voice[c(TRUE,FALSE), ]
+clean_voice$label <- factor(clean_voice$label)
+control=trainControl(method='cv',number=10)
+formular=label~.
+L <- train(formular,data=clean_voice,
+           method='svmLinear',metric='Accuracy',
+           trControl=control)
+LW <- train(formular,data=clean_voice,
+            method='svmLinearWeights',metric='Accuracy',
+            trControl=control)
+P <- train(formular,data=clean_voice,
+            method='svmPoly',metric='Accuracy',
+            trControl=control)
+R <- train(formular,data=clean_voice,
+            method='svmRadial',metric='Accuracy',
+            trControl=control)
+RW <- train(formular,data=clean_voice,
+            method='svmRadialWeights',metric='Accuracy',
+            trControl=control)
+f100 <- train(formular,data=clean_voice,
+            method='rf',ntree=100,metric='Accuracy',
+            trControl=control)
+f300 <- train(formular,data=clean_voice,
+            method='rf',ntree=300,metric='Accuracy',
+            trControl=control)
+f500 <- train(formular,data=clean_voice,
+            method='rf',ntree=500,metric='Accuracy',
+            trControl=control)
+r <- train(formular,data=clean_voice,
+            method='rpart',metric='Accuracy',
+            trControl=control)
+k <- train(formular,data=clean_voice,
+            method='knn',metric='Accuracy',
+            trControl=control)
+g <- train(formular,data=clean_voice,
+            method='glm',metric='Accuracy',
+            trControl=control)
+resamp = resamples(list(선형=L, 선형가중치=LW, 다항식=P,
+                        RBF= R, 가중치=RW, rf100=f100,
+                        rf300=f300, rf500=f500,tree=r,
+                        knn=k,glm=g))
+summary(resamp)
+```
+
+```{r}
+sort(resamp,decreasing = TRUE)
+```
+
+```{r}
+dotplot(resamp)
+```
+

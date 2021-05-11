@@ -1,0 +1,121 @@
+---
+title: "Exercise"
+author: "JeehyunOh"
+date: '2021 5 3 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 1. ucla 데이터 | 4가지 모델 | 예측/평가
+
+```{r}
+library(class)
+library(caret)
+library(e1071)
+library(randomForest)
+library(rpart)
+ucla <- read.csv('https://stats.idre.ucla.edu/stat/data/binary.csv')
+ucla$admit <- factor(ucla$admit)
+set.seed(2021)
+train_index <- createDataPartition(ucla$admit,p=0.8,list=F)
+ucla_train <- ucla[train_index,]
+ucla_test <- ucla[-train_index,]
+
+#결정트리
+
+#모델링
+dtc <- rpart(admit~., ucla_train)
+
+# 예측
+pred <- predict(dtc,ucla_test,type='class')
+
+# 평가
+confusionMatrix(pred, ucla_test$admit)
+```
+
+```{r}
+# 랜덤 포레스트
+
+# 모델링
+rf <- randomForest(admit ~ ., ucla_train)
+# 예측
+pred <- predict(rf,ucla_test, type = 'class')
+# 평가
+confusionMatrix(pred, ucla_test$admit)
+```
+
+```{r}
+# 모델링
+svc <- svm(admit~., ucla_train)
+
+# 예측
+pred <- predict(svc, ucla_test, type='class')
+
+# 평가
+confusionMatrix(pred,ucla_test$admit)
+```
+
+```{r}
+k <- knn(ucla_train[,1:4],ucla_test[,1:4],ucla_train$admit, k=3)
+confusionMatrix(k,ucla_test$admit)
+```
+
+
+# 2. wine
+
+```{r}
+setwd('C:/Workspace/R')
+wine <- read.table('data/wine.data.txt', sep = ',')
+colums <-readLines('data/wine.name.txt')
+names(wine)[2:14] <- colums
+names(wine)[2:14] <-substr(colums, 4,nchar(colums))
+names(wine)[1] <- 'Y'
+wine$Y <- factor(wine$Y)
+set.seed(2021)
+train_index <- sample(1:nrow(wine),0.8*nrow(wine))
+test_index <- setdiff(1:nrow(wine), train_index)
+#train_index <- createDataPartition(wine$Alcohol,p=0.8,list=F)
+wine_train <- wine[train_index,]
+wine_test <- wine[test_index,]
+
+# 랜덤 포레스트
+
+#모델링
+dtc <- rpart(Y~., wine_train)
+
+# 예측
+pred <- predict(dtc,wine_test,type='class')
+
+# 평가
+confusionMatrix(pred, wine_test$Y)
+```
+
+```{r}
+
+# 모델링
+rf <- randomForest(Y ~ ., wine_train)
+# 예측
+pred <- predict(rf,wine_test, type = 'class')
+# 평가
+confusionMatrix(pred, wine_test$Y)
+```
+
+
+```{r}
+# 모델링
+svc <- svm(Y~., wine_train)
+
+# 예측
+pred <- predict(svc, wine_test, type='class')
+
+# 평가
+confusionMatrix(pred,wine_test$Y)
+```
+
+```{r}
+k <- knn(wine_train[,1:14],wine_test[,1:14],wine_train$Y, k=3)
+confusionMatrix(k,wine_test$Y)
+```

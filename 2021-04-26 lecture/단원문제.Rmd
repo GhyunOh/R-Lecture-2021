@@ -1,0 +1,62 @@
+---
+title: "Exercise"
+author: "JeehyunOh"
+date: '2021 4 26 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 01번 문제
+
+연도별 데이터 파일을 읽어들여 NHIS2002 ~ NHIS2016라는 변수 이름으로 저장하라
+```{r}
+for(i in 2:16){
+    if(i <=9){
+        name <- paste("NHIS200",i ,sep = "")
+        fileName <- paste("data/NHIS_OPEN_GJ_200",i,"_v1",sep = "")
+    } else {
+        name <- paste("NHIS20", i , sep = "")
+        fileName <- paste("data/NHIS_OPEN_GJ_20",i,"_v1",sep = "")
+    }
+    assign(name, c())
+    assign(name, read.csv(paste(fileName, ".csv",sep="")))
+}
+
+```
+
+# 02번 문제
+
+데이터 파일과 함께 다운로드된 사용자 메뉴얼 파일의 내용을 참고하여 결측값을 제거하고 각 열의 데이터형을 알맞게 변환하여 정리하라
+```{r}
+
+```
+
+
+# 03번 문제
+
+2002년 데이터에서 성별, 시도, 연령대 순으로 요약된 통계값을 구하라.
+```{r}
+select(NHIS2002,성별코드,시도코드,'연령대코드(5세단위)')
+```
+
+
+# 04번 문제
+
+2003~2016년 데이터에서 03 문제와 같은 방법으로 요약된 통계값을 구하라.
+```{r}
+NHIS <- mget(ls(patter= "NHIS"))
+dataNHIS <- NHIS[4:17] %>% summarize(genderCode=(성별코드),cityCode=(시도코드),ageCode=("연령대코드(5세단위)"))
+```
+
+
+# 05번 문제
+
+전체 관측 기간에 대한 요약 통계값을 데이터 프레임 변수 하나에 병합하라.(단, 특정 해의 누락 된 검사 항목은 결측값으로 표시한다.)
+```{r}
+
+```
+
+

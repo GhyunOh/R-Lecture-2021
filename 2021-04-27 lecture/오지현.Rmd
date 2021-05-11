@@ -1,0 +1,115 @@
+---
+title: "Exercise"
+author: "JeehyunOh"
+date: '2021 4 27 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# 단원 01번 문제
+gapminder 데이터에 기록된 전 세계 인구의 구성 비율은 어떻게 변화되고 있을까?
+
+1) 전체 관측 기간(1952년~2007년)중 1952년도의 인구 구성을
+추출한 후 [그림 6-25]와 같이 시각화하라.
+```{r}
+library(ggplot2)
+library(dplyr)
+library(gapminder)
+pop1952 <- gapminder %>% 
+        filter(year == 1952) %>% 
+    select(country,pop) %>%
+    arrange(desc(pop)) %>% 
+    head()
+pie(pop1952$pop, pop1952$country)
+barplot(pop1952$pop, names.arg = (pop1952$country))
+```
+
+2) 1952년~2007년 인구 구성을 for문을 이용해 반복적으로 시각화하라.
+```{r}
+popYear <- seq(from = 1952,to = 2007, by = 5)
+for(i in 1:length(popYear)){
+    everyPop <- gapminder %>% 
+        filter(year == popYear[i]) %>%
+    arrange(desc(pop)) %>% 
+    head()
+pie(as.numeric(everyPop$pop), as.numeric(everyPop$country), main = popYear[i])
+barplot(everyPop$pop, names.arg = (everyPop$country), main = popYear[i])
+}
+```
+
+3) 시각화 그래프를 통해 알게 된 사실을 몇 가지로 요약하라.
+```{r}
+print("중국의 인구 구성율이 1952~2007년까지 항상 1순위 였다는 것을 알 수 있다.")
+```
+
+# ggplot 연습문제 01번
+
+품종별로 Sepal/Petal의 Length, Width 산점도 그리기. (총 6개)
+```{r}
+ggplot(iris, aes(x = Sepal.Length, 
+                 y = Sepal.Width,
+                 col=Species)) +
+    geom_point()
+```
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, 
+                 y = Petal.Length,
+                 col=Species)) +
+    geom_point()
+```
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, 
+                 y = Petal.Width, 
+                 col=Species)) +
+    geom_point()
+```
+
+```{r}
+ggplot(iris, aes(x = Sepal.Width, 
+                 y = Petal.Length,
+                 col=Species)) +
+    geom_point()
+```
+
+```{r}
+ggplot(iris, aes(x = Sepal.Width, 
+                 y = Petal.Width,
+                 col=Species)) +
+    geom_point()
+```
+
+```{r}
+ggplot(iris, aes(x = Petal.Length, 
+                 y = Petal.Width,
+                 col=Species)) +
+    geom_point()
+```
+
+# ggplot 연습문제 02번 
+
+품종별 Sepal/Petal의 Length/Width 평균을 비교하되 항목을 옆으로 늘어놓은 것(beside=T)과 위로 쌓아올린 것 2개를 그리시오. (총 12개 항목의 데이터를 2개의 그래프에)
+
+```{r}
+compare <- iris %>%
+    group_by(Species) %>% 
+    summarise(S.L = mean(Sepal.Length),
+              S.W = mean(Sepal.Width),
+              P.L = mean(Petal.Length),
+              P.W = mean(Petal.Width))
+barplot(as.matrix(compare[,c(2:5)]))
+```
+```{r}
+barplot(as.matrix(compare[,c(2:5)]),beside = T)
+```
+
+# ggplot 연습문제 03번
+
+박스 플롯 그리기
+```{r}
+boxplot(iris)
+```
+
