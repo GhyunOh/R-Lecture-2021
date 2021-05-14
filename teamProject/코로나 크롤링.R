@@ -26,5 +26,4 @@ for(month in 1:13){
     num <- as.integer(num)
     sum <- c(sum, num)
 }
-
 sum
