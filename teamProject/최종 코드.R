@@ -5,7 +5,7 @@ library(ggplot2)
 library(gapminder)
 library(lubridate)
 
-# 코로나 크롤링 2020-02-15~2021-03-14 (한달단위)
+# 코로나 크롤링 2020-01-01~2021-01-01 (한달단위)
 cSum <- c()
 keyword <- "코로나"
 base_url <- "https://search.daum.net/search?nil_suggest=btn&w=news&DA=STC&cluster=y&q="
@@ -111,14 +111,17 @@ for(month in 1:12){
 l2Sum
 
 # 그래프 #
-## 매매가 형성 산점도 그래프 ##
 t_trade <- read.csv('t_total.csv')
+## 매매가 형성 산점도 그래프 ##
+
+
 
 t_g <- t_trade %>%
   filter(계약연도!=2021) %>% 
   group_by(구,계약연도) %>% 
-  ggplot(aes(계약연도,거래금액)) + 
-  geom_point(stat='identity',alpha=0.2, position='jitter')
+  ggplot(aes(계약연도,거래금액,color=구)) + 
+  geom_point(stat='identity',alpha=0.2, position='jitter') +
+  labs(title = "연도별 매매가 형성 산점도 그래프")
 t_g
 
 ## 매매가 형성 바 그래프 ##
@@ -126,7 +129,8 @@ t_g
 t_g_b <- t_trade %>%
   group_by(구,계약연도) %>% 
   ggplot(aes(계약연도,거래금액)) + 
-  geom_bar(stat='identity', position='dodge',aes(fill=구)) 
+  geom_bar(stat='identity', position='dodge',aes(fill=구)) +
+  labs(title = "연도별 구별 최고 매매가 형성 막대 그래프")
 t_g_b
 
 ## 평균매매가 변화량 추이 그래프 ##
@@ -135,7 +139,7 @@ t_trade %>%
   group_by(계약연도,구) %>% 
   summarise(avg_t_trade = mean(거래금액)) %>% 
   ggplot(aes(계약연도,avg_t_trade))  +
-  geom_line(aes(color=구))  +
+  geom_line(aes(color=구),size=2)  +
   ylab("평균거래가") +
   labs(title = '지역구별 평균거래가격 추이')
 
@@ -147,7 +151,7 @@ t_volume <- t_trade %>%
   summarise(num_kind=n()) %>% 
   ggplot(aes(계약연도,num_kind)) +
   geom_bar(stat='identity', position='dodge',aes(fill=구)) +
-  ylab("계약건수")
+  ylab("계약건수") + labs(title = "연도별 구별 거래량 추이 막대 그래프")
 t_volume
 
 ## 검색 트래픽과 주택가격 변화량의 상관관계 그래프 ##
@@ -174,7 +178,7 @@ t_graph <- t_trade %>%
   ggplot(aes(계약월,avg_t_trade))+ 
   geom_bar(stat='identity',position='dodge', aes(fill=구))+
   geom_line(aes(계약월,코로나평균,group=1),size=1.5) +
-  scale_y_continuous(sec.axis = sec_axis(~.,name="코로나")) +
+  scale_y_continuous(sec.axis = sec_axis(~.,name="코로나 검색 트래픽 * 10")) +
   ylab("평균거래가") + xlab("2020년") + 
   labs(title = '2020년 검색 트래픽(코로나)과 주택가격 변화량의 상관관계 그래프')
 t_graph
@@ -183,7 +187,7 @@ ltvSum <- lSum / 100
 t_trade$계약월 <- as.integer(t_trade$계약월)
 t_trade$계약월 <- sprintf("%02d",t_trade$계약월)
 t_trade <- t_trade %>% 
-  mutate(코로나 = ifelse(t_trade$계약연도 == '2016',ltvSum[1],
+  mutate(부동산 = ifelse(t_trade$계약연도 == '2016',ltvSum[1],
                   ifelse(t_trade$계약연도 == '2017',ltvSum[2],
                   ifelse(t_trade$계약연도 == '2018',ltvSum[3], 
                   ifelse(t_trade$계약연도 == '2019',ltvSum[4],
@@ -191,11 +195,11 @@ t_trade <- t_trade %>%
 t_volume <- t_trade %>%
   filter(계약연도!=2021) %>% 
   group_by(계약연도) %>% 
-  summarise(num_kind=n(),코로나평균=mean(코로나)) %>% 
+  summarise(num_kind=n(),부동산평균=mean(부동산)) %>% 
   ggplot(aes(계약연도,num_kind)) +
   geom_bar(stat='identity') +
-  geom_line(aes(계약연도,코로나평균,group=1),size=2,color="red") +
-  scale_y_continuous(sec.axis = sec_axis(~.,name="부동산대책 검색 트래픽")) + 
+  geom_line(aes(계약연도,부동산평균,group=1),size=2,color="red") +
+  scale_y_continuous(sec.axis = sec_axis(~.,name="부동산대책 검색 트래픽 * 100")) + 
   ylab("거래량") + labs(title = '검색 트래픽과 주택가격 변화량의 상관관계 그래프')
 t_volume
 
@@ -222,8 +226,6 @@ t_volume <- t_trade %>%
   ggplot(aes(거래일자,num_kind)) +
   geom_bar(stat='identity') +
   geom_line(aes(거래일자,부동산평균,group=1),size=2,color="red") +
-  scale_y_continuous(sec.axis = sec_axis(~.,name="부동산대책 검색 트래픽")) + 
+  scale_y_continuous(sec.axis = sec_axis(~.,name="부동산대책 검색 트래픽 * 100")) + 
   ylab("거래량") + labs(title = '검색 트래픽과 주택가격 변화량의 상관관계 그래프')
 t_volume
-
-
